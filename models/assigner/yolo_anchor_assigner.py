@@ -13,7 +13,7 @@ class YOLOAnchorAssigner(nn.Module):
                  anchors=[],
                  anchor_t=4.0,
                  stride=[],
-                 nc=80,
+                 nc=8,
                  num_keypoints=0,
                  single_targets=False,
                  ota=False,
