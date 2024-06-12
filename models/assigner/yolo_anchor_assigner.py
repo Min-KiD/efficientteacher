@@ -51,7 +51,7 @@ class YOLOAnchorAssigner(nn.Module):
             return self.build_targets(p, targets)
 
     def build_targets_kps(self, p, targets, npoint = 8):
-      # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
+        # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
         na, nt = self.na, targets.shape[0]
         tcls, tbox, indices, anch, landmarks, lmks_mask = [], [], [], [], [], []
         gain = torch.ones(npoint*2+7,device=targets.device)
