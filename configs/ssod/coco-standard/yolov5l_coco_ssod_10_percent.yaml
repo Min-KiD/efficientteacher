@@ -26,15 +26,15 @@ Model:
   depth_multiple: 1.00  # model depth multiple
   width_multiple: 1.00  # layer channel multiple
   Backbone: 
-    name: 'YoloV6'
+    name: 'YoloV5'
     activation: 'SiLU'
   Neck: 
-    name: 'YoloV6' 
+    name: 'YoloV5' 
     in_channels: [256, 512, 1024]
     out_channels: [256, 512, 1024]
     activation: 'SiLU'
   Head: 
-    name: 'YoloV6'
+    name: 'YoloV5'
   anchors: [[10,13, 16,30, 33,23],[30,61, 62,45, 59,119],[116,90, 156,198, 373,326]]  # P5/32]
 Loss:
   type: 'ComputeLoss'
