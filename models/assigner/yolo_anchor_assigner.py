@@ -88,6 +88,11 @@ class YOLOAnchorAssigner(nn.Module):
             gij = (gxy - offsets).long()
             gi, gj = gij.T  # grid xy indices
             a = t[:, npoint*2+6].long()  # anchor indices
+            
+            # Ensure gj and gi are long before clamping and appending
+            gj = gj.long()
+            gi = gi.long()
+            
             indices.append((b, a, gj.clamp_(0, gain[3] - 1), gi.clamp_(0, gain[2] - 1)))  # image, anchor, grid indices
             tbox.append(torch.cat((gxy - gij, gwh), 1))  # box
             anch.append(anchors[a])  # anchors
