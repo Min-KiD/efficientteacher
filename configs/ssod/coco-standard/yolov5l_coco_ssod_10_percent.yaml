@@ -28,6 +28,7 @@ Model:
   Backbone: 
     name: 'YoloV7'
     activation: 'SiLU'
+    out_channels: [256, 512, 1024]
   Neck: 
     name: 'YoloV7' 
     in_channels: [256, 512, 1024]
@@ -35,6 +36,8 @@ Model:
     activation: 'SiLU'
   Head: 
     name: 'YoloV7'
+    in_channels: [256, 512, 1024]  # Ensure this matches Neck out_channels
+    out_channels: [256, 512, 1024]
   anchors: [[10,13, 16,30, 33,23],[30,61, 62,45, 59,119],[116,90, 156,198, 373,326]]  # P5/32]
 Loss:
   type: 'ComputeLoss'
