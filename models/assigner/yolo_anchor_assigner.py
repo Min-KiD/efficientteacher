@@ -50,11 +50,11 @@ class YOLOAnchorAssigner(nn.Module):
         else:
             return self.build_targets(p, targets)
 
-    def build_targets_kps(self, p, targets, npoint = 8):
+    def build_targets_kps(self, p, targets, npoint=8):
         # Build targets for compute_loss(), input targets(image,class,x,y,w,h)
         na, nt = self.na, targets.shape[0]
         tcls, tbox, indices, anch, landmarks, lmks_mask = [], [], [], [], [], []
-        gain = torch.ones(npoint*2+7,device=targets.device)
+        gain = torch.ones(npoint*2+7, device=targets.device)
         ai = torch.arange(na, device=targets.device).float().view(na, 1).repeat(1, nt)  # same as .repeat_interleave(nt)
         targets = torch.cat((targets.repeat(na, 1, 1), ai[:, :, None]), 2)  # append anchor indices
         g = 0.5  # bias
@@ -65,8 +65,8 @@ class YOLOAnchorAssigner(nn.Module):
         for i in range(self.nl):
             anchors = self.anchors[i]
             gain[2:6] = torch.tensor(p[i].shape)[[3, 2, 3, 2]]  # xyxy gain
-            gain_list = [3,2]*npoint                            # landmarks 10
-            gain[6: 6+(npoint*2)] = torch.tensor(p[i].shape)[gain_list]  # xyxy gain
+            gain_list = [3, 2] * npoint  # landmarks 10
+            gain[6: 6 + (npoint * 2)] = torch.tensor(p[i].shape)[gain_list]  # xyxy gain
             t = targets * gain
             if nt:
                 r = t[:, :, 4:6] / anchors[:, None]  # wh ratio
@@ -87,20 +87,20 @@ class YOLOAnchorAssigner(nn.Module):
             gwh = t[:, 4:6]  # grid wh
             gij = (gxy - offsets).long()
             gi, gj = gij.T  # grid xy indices
-            a = t[:, npoint*2+6].long()  # anchor indices
+            a = t[:, npoint * 2 + 6].long()  # anchor indices
             
-            # Ensure gj and gi are long before clamping and appending
-            gj = gj.long()
-            gi = gi.long()
+            # Clamp gj and gi as long
+            gj = gj.clamp(0, gain[3].long() - 1)
+            gi = gi.clamp(0, gain[2].long() - 1)
             
-            indices.append((b, a, gj.clamp_(0, gain[3] - 1), gi.clamp_(0, gain[2] - 1)))  # image, anchor, grid indices
+            indices.append((b, a, gj, gi))  # image, anchor, grid indices
             tbox.append(torch.cat((gxy - gij, gwh), 1))  # box
             anch.append(anchors[a])  # anchors
             tcls.append(c)  # class
-            lks = t[:,6: (npoint*2+6)]
+            lks = t[:, 6: (npoint * 2 + 6)]
             lks_mask = torch.where(lks < 0, torch.full_like(lks, 0.), torch.full_like(lks, 1.0))
             for idx in range(npoint):
-                lks[:, [2*idx, 2*idx+1]] = (lks[:, [2*idx, 2*idx+1]] - gij)
+                lks[:, [2 * idx, 2 * idx + 1]] = (lks[:, [2 * idx, 2 * idx + 1]] - gij)
             lks_mask_new = lks_mask
             lmks_mask.append(lks_mask_new)
             landmarks.append(lks)
