@@ -693,8 +693,8 @@ class YOLOAnchorAssigner(nn.Module):
             # a = t[:, 6].long()  # anchor indices
             a = t[:, 7].long()  # anchor indices
             score = t[:,6].T
-            indices.append((b, a, gj.clamp_(0, gain[3] - 1), gi.clamp_(0, gain[2] - 1)))  # image, anchor, grid indices
-            tbox.append(torch.cat((gxy - gij, gwh), 1))  # box
+            indices.append((b, a, gj.clamp_(0, int(gain[3] - 1)), gi.clamp_(0, int(gain[2] - 1))))  # image, anchor, grid indices
+            tbox.append(torch.cat((gxy - gij.float(), gwh), 1))  # box
             anch.append(anchors[a])  # anchors
             tcls.append(c)  # class
             tscore.append(score)
